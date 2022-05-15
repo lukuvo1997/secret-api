@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 
-// php artisan migrate:fresh --seed 
+// a route segítségével képesek vagyunk böngészőből migrációt és adatbázis seed-et véghez vinni 
 
 Route::get('/db-migrate', function () {
     Artisan::queue('migrate:fresh --seed');

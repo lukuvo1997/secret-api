@@ -13,6 +13,8 @@ class Secret extends Migration
      */
     public function up()
     {
+        // secret nevű tábla létrehozása
+        
         Schema::create('secret', function (Blueprint $table) {
             $table->id();
             $table->string('hash')->unique();

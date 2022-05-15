@@ -13,6 +13,8 @@ class SecretSeeder extends Seeder
      */
     public function run(Faker $faker)
     {
+        // Töltsük fel 50 random titokkal az adatbázist
+        
         for ($i=0; $i < 50; $i++) { 
             $minutes = rand(0,100);
             DB::table('secret')->insert([

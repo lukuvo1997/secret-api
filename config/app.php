@@ -67,6 +67,8 @@ return [
     |
     */
 
+    // EU időzóna beállítása
+
     'timezone' => 'Europe/Paris',
 
     /*

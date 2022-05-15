@@ -17,6 +17,9 @@ use App\Http\Controllers\SecretController;
 |
 */
 
+
+// a group segítségével el tudjuk különíteni a későbbi verziókat
+
 Route::prefix('v1')->group(function () {
     Route::get('/secret/{hash}', [SecretController::class, 'getSecretByHash']);
     Route::post('/secret', [SecretController::class, 'addSecret']);
