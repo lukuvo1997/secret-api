@@ -50,8 +50,29 @@ class SecretController extends Controller
             'secretText' => $request->secret,
             'remainingViews' => $request->remainingViews
         ];
-        
-        return response($response, 201);
+
+        // a reszponzív válaszadás miatt lekérem a header fejlécet, hogy megtudjuk milyen típusba szeretné a választ kapni
+        // jelenleg json / xml formátum elérhető
+        // ha nem érkezik fejléc akkor eldobom a kérést
+
+        switch (request()->header('accept')) {
+            case 'application/json':
+                header('Content-type: application/json');
+                return response($response, 201)->header('Content-Type', 'application/json');
+                break;
+
+            case 'application/xml':
+                header('Content-type: application/xml');
+                return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
+                break;
+            
+            default:
+                $response = [
+                    'message' => 'Accept not found.'
+                ];
+                return response($response, 405);
+                break;
+        }
     }
 
     /**
@@ -76,8 +97,25 @@ class SecretController extends Controller
             $response = [
                 'message' => 'Secret not found.'
             ];
-            
-            return response($response, 404);
+
+            switch (request()->header('accept')) {
+                case 'application/json':
+                    header('Content-type: application/json');
+                    return response($response, 405)->header('Content-Type', 'application/json');
+                    break;
+
+                case 'application/xml':
+                    header('Content-type: application/xml');
+                    return response()->view('response.xml.not-found', compact('response'), 405)->header('Content-Type', 'application/xml');
+                    break;
+                
+                default:
+                    $response = [
+                        'message' => 'Accept not found.'
+                    ];
+                    return response($response, 405);
+                    break;
+            }
         }
 
         // ha megtaláltuk a titkot, akkor a megtekintésből leveszek 1 értéket, majd updatelem az adatbázisban, és visszaadom a titkot json formátumban
@@ -87,10 +125,32 @@ class SecretController extends Controller
         Secret::where('hash',$request->hash)->update([ 'remaining_views' => $remaining_views ]);
 
         $response = [
+            'hash' => $request->hash,
             'secret' => $secret->name,
             'remaining_views' => $remaining_views
         ];
+
+        // a reszponzív válaszadás miatt lekérem a header fejlécet, hogy megtudjuk milyen típusba szeretné a választ kapni
+        // jelenleg json / xml formátum elérhető
+        // ha nem érkezik fejléc akkor eldobom a kérést
         
-        return response($response, 201);
+        switch (request()->header('accept')) {
+            case 'application/json':
+                header('Content-type: application/json');
+                return response($response, 201)->header('Content-Type', 'application/json');
+                break;
+
+            case 'application/xml':
+                header('Content-type: application/xml');
+                return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
+                break;
+            
+            default:
+                $response = [
+                    'message' => 'Accept not found.'
+                ];
+                return response($response, 405);
+                break;
+        }
     }
 }
