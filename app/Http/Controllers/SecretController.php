@@ -92,7 +92,7 @@ class SecretController extends Controller
         // ha a minutes 0, akkor csak akkor érhető el a titok, ha maradt még legalább 1 megtekintés, így a lejárati dátumot figyelmen kívűl hagyjuk
 
         $secret = Secret::select('name','remaining_views')->where('hash',$request->hash)->where('remaining_views','>',0)->where(function ($query) {
-               $query->where('expires_at', '>', Carbon::now())
+               $query->where('expires_at', '>=', Carbon::now())
                      ->orWhere('minutes',0);
             })->first();
 

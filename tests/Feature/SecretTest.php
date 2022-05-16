@@ -23,8 +23,12 @@ class SecretTest extends TestCase
 
         // postoljuk a megadott url címre a formdata tömböt benne a titokkal, majd ha a válasz helyes egy újabb kérést indítunk, melyen az előbb létrehozott titkot fogjuk visszakérni
 
-        $response = $this->json('POST', '/api/secret', $formData)->assertStatus(201)->decodeResponseJson();
+        $this->withHeaders([
+            'Accept' => 'application/json'
+        ]);
 
-        $this->get('/api/secret/' . $response['hash'])->assertStatus(201);
+        $response = $this->json('POST', '/api/v1/secret', $formData)->assertStatus(201)->decodeResponseJson();
+
+        $this->get('/api/v1/secret/' . $response['hash'])->assertStatus(201);
     }
 }
