@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\Yaml\Yaml;
 
 class SecretController extends Controller
 {
@@ -57,13 +58,15 @@ class SecretController extends Controller
 
         switch (request()->header('accept')) {
             case 'application/json':
-                header('Content-type: application/json');
                 return response($response, 201)->header('Content-Type', 'application/json');
                 break;
 
             case 'application/xml':
-                header('Content-type: application/xml');
                 return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
+                break;
+
+            case 'application/x-yaml':
+                return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
                 break;
             
             default:
@@ -100,13 +103,15 @@ class SecretController extends Controller
 
             switch (request()->header('accept')) {
                 case 'application/json':
-                    header('Content-type: application/json');
                     return response($response, 405)->header('Content-Type', 'application/json');
                     break;
 
                 case 'application/xml':
-                    header('Content-type: application/xml');
                     return response()->view('response.xml.not-found', compact('response'), 405)->header('Content-Type', 'application/xml');
+                    break;
+
+                case 'application/x-yaml':
+                    return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
                     break;
                 
                 default:
@@ -136,13 +141,15 @@ class SecretController extends Controller
         
         switch (request()->header('accept')) {
             case 'application/json':
-                header('Content-type: application/json');
                 return response($response, 201)->header('Content-Type', 'application/json');
                 break;
 
             case 'application/xml':
-                header('Content-type: application/xml');
                 return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
+                break;
+
+            case 'application/x-yaml':
+                return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
                 break;
             
             default:
