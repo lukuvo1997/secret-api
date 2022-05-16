@@ -131,8 +131,8 @@ class SecretController extends Controller
 
         $response = [
             'hash' => $request->hash,
-            'secret' => $secret->name,
-            'remaining_views' => $remaining_views
+            'secretText' => $secret->name,
+            'remainingViews' => $remaining_views
         ];
 
         // a reszponzív válaszadás miatt lekérem a header fejlécet, hogy megtudjuk milyen típusba szeretné a választ kapni
