@@ -52,30 +52,14 @@ class SecretController extends Controller
             'remainingViews' => $request->remainingViews
         ];
 
+        // accept lekérése
+        $accept = request()->header('accept') ? request()->header('accept') : '';
+
         // a reszponzív válaszadás miatt lekérem a header fejlécet, hogy megtudjuk milyen típusba szeretné a választ kapni
         // jelenleg json / xml formátum elérhető
         // ha nem érkezik fejléc akkor eldobom a kérést
 
-        switch (request()->header('accept')) {
-            case 'application/json':
-                return response($response, 201)->header('Content-Type', 'application/json');
-                break;
-
-            case 'application/xml':
-                return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
-                break;
-
-            case 'application/x-yaml':
-                return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
-                break;
-            
-            default:
-                $response = [
-                    'message' => 'Accept not found.'
-                ];
-                return response($response, 405);
-                break;
-        }
+        return $this->sendResponse($accept, $response, 201, true);
     }
 
     /**
@@ -96,31 +80,15 @@ class SecretController extends Controller
                      ->orWhere('minutes',0);
             })->first();
 
+        // accept lekérése
+        $accept = request()->header('accept') ? request()->header('accept') : '';
+
         if(empty($secret)){
             $response = [
                 'message' => 'Secret not found.'
             ];
 
-            switch (request()->header('accept')) {
-                case 'application/json':
-                    return response($response, 405)->header('Content-Type', 'application/json');
-                    break;
-
-                case 'application/xml':
-                    return response()->view('response.xml.not-found', compact('response'), 405)->header('Content-Type', 'application/xml');
-                    break;
-
-                case 'application/x-yaml':
-                    return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
-                    break;
-                
-                default:
-                    $response = [
-                        'message' => 'Accept not found.'
-                    ];
-                    return response($response, 405);
-                    break;
-            }
+            return $this->sendResponse($accept, $response, 405);
         }
 
         // ha megtaláltuk a titkot, akkor a megtekintésből leveszek 1 értéket, majd updatelem az adatbázisban, és visszaadom a titkot json formátumban
@@ -139,17 +107,22 @@ class SecretController extends Controller
         // jelenleg json / xml formátum elérhető
         // ha nem érkezik fejléc akkor eldobom a kérést
         
-        switch (request()->header('accept')) {
+        return $this->sendResponse($accept, $response, 201, true);
+    }
+
+    private function sendResponse($accept, $response, $http_code, $xml_found = false){
+        switch ($accept) {
             case 'application/json':
-                return response($response, 201)->header('Content-Type', 'application/json');
+                return response($response, $http_code)->header('Content-Type', 'application/json');
                 break;
 
             case 'application/xml':
-                return response()->view('response.xml.found', compact('response'), 201)->header('Content-Type', 'application/xml');
+                $view = $xml_found ? 'response.xml.found' : 'response.xml.not-found';
+                return response()->view($view, compact('response'), $http_code)->header('Content-Type', 'application/xml');
                 break;
 
             case 'application/x-yaml':
-                return response(Yaml::dump($response, 1), 201)->header('Content-Type', 'application/x-yaml');
+                return response(Yaml::dump($response, 1), $http_code)->header('Content-Type', 'application/x-yaml');
                 break;
             
             default:
